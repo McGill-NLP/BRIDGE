@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BRIDGE: Predicting Human Task Completion Time From Model Performance</title>
+  <meta name="description" content="BRIDGE is a psychometric framework that predicts human task completion time from AI model performance using Item Response Theory, enabling scalable capability forecasting without human studies.">
+  <meta name="keywords" content="BRIDGE, IRT, Item Response Theory, AI evaluation, task difficulty, human completion time, capability forecasting, NeurIPS 2025">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="BRIDGE: Predicting Human Task Completion Time From Model Performance">
+  <meta property="og:description" content="A psychometric framework aligning latent task difficulty with human completion time for scalable AI capability forecasting.">
+  <meta property="og:type" content="website">
+
+  <!-- Bulma CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&display=swap">
+  <!-- KaTeX for math -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true},{left: '$', right: '$', display: false}]});"></script>
+
+  <link rel="stylesheet" href="static/style.css">
+</head>
+
+<body>
+
+<!-- ======== Hero Section ======== -->
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title">
+            BRIDGE: Predicting Human Task Completion Time From Model Performance
+          </h1>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="#">Fengyuan Liu</a><sup>*1,2</sup>,
+            </span>
+            <span class="author-block">
+              <a href="#">Jay Gala</a><sup>*1,2</sup>,
+            </span>
+            <span class="author-block">
+              <a href="#">Nilaksh</a><sup>1,3</sup>,
+            </span>
+            <span class="author-block">
+              <a href="#">Dzmitry Bahdanau</a><sup>1,2,4,6</sup>,
+            </span>
+            <span class="author-block">
+              <a href="#">Siva Reddy</a><sup>1,2,5,6</sup>,
+            </span>
+            <span class="author-block">
+              <a href="#">Hugo Larochelle</a><sup>1</sup>
+            </span>
+          </div>
+
+          <div class="is-size-6 publication-affiliations">
+            <span class="affil-block"><sup>1</sup>Mila &ndash; Quebec AI Institute</span>
+            <span class="affil-block"><sup>2</sup>McGill University</span>
+            <span class="affil-block"><sup>3</sup>Polytechnique Montr&eacute;al</span>
+            <span class="affil-block"><sup>4</sup>Periodic Labs</span>
+            <span class="affil-block"><sup>5</sup>ServiceNow Research</span>
+            <span class="affil-block"><sup>6</sup>Canada CIFAR AI Chair</span>
+          </div>
+          <div class="is-size-7 has-text-grey" style="margin-top: 0.3rem;">
+            <sup>*</sup>Equal Contribution &nbsp;&middot;&nbsp;
+            Correspondence: <a href="mailto:fengyuan.liu@mila.quebec">{fengyuan.liu, jay.gala}@mila.quebec</a>
+          </div>
+
+          <!-- Links -->
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <span class="link-block">
+                <a href="#" class="button is-dark is-rounded is-small">
+                  <span class="icon"><i class="fas fa-file-pdf"></i></span>
+                  <span>Paper</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="https://github.com/McGill-NLP/BRIDGE" class="button is-dark is-rounded is-small">
+                  <span class="icon"><i class="fab fa-github"></i></span>
+                  <span>Code</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="#" class="button is-dark is-rounded is-small">
+                  <span class="icon"><i class="ai ai-arxiv"></i></span>
+                  <span>arXiv</span>
+                </a>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ======== Overview Figure ======== -->
+<section class="section" style="padding-top: 1rem;">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-10">
+        <figure class="image">
+          <img src="static/images/BRIDGE-flowchart.png" alt="Overview of BRIDGE framework" loading="lazy">
+        </figure>
+        <p class="fig-caption">
+          <strong>Overview of BRIDGE.</strong> Model responses across benchmarks are used to fit a 2PL IRT model, estimating latent task difficulty and model capability. Calibrating latent difficulty against tasks with known human completion times yields predictions of human task duration for new benchmarks&mdash;enabling capability forecasting without human time annotations.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ======== Abstract ======== -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-10">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+            Evaluating the real-world capabilities of AI systems requires grounding benchmark performance in human-interpretable measures of task difficulty. Existing approaches that rely on direct human task completion time annotations are costly, noisy, and difficult to scale across benchmarks. In this work, we propose <strong>BRIDGE</strong> (<strong>B</strong>enchmark <strong>R</strong>esponse <strong>I</strong>nferred <strong>D</strong>ifficulty <strong>G</strong>rounded in <strong>E</strong>lapsed human time), a unified psychometric framework that learns the latent difficulty scale from model responses and anchors it to human task completion time.
+          </p>
+          <p>
+            Using a two-parameter logistic Item Response Theory model, we jointly estimate latent task difficulty and model capability from model performance data across multiple benchmarks. We demonstrate that latent task difficulty varies linearly with the logarithm of human completion time, allowing human task completion time to be inferred for new benchmarks from model performance alone. Leveraging this alignment, we forecast frontier model capabilities in terms of human task length and independently reproduce METR's exponential scaling results, with the <strong>50% solvable task horizon doubling approximately every 6 months</strong>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ======== Method ======== -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-10">
+        <h2 class="title is-3">Method</h2>
+        <div class="content has-text-justified">
+          <p>
+            BRIDGE connects two complementary regimes: expensive but interpretable human time annotations, and scalable but uncalibrated IRT-based difficulty estimates from model performance.
+          </p>
+
+          <h4 class="title is-5">Step 1: Fit IRT Model</h4>
+          <p>
+            Given binary outcomes (success/failure) for each model&ndash;task pair, we fit a two-parameter logistic (2PL) IRT model. The probability of model $m_j$ succeeding on task $t_i$ is:
+          </p>
+          <p class="has-text-centered">
+            $$P(y_{i,j} = 1 \mid \theta_j, a_i, b_i) = \sigma\big(a_i(\theta_j - b_i)\big)$$
+          </p>
+          <p>
+            where $\theta_j$ is the model's latent ability, $b_i$ is the task's latent difficulty, and $a_i$ is the task's discrimination parameter.
+          </p>
+
+          <h4 class="title is-5">Step 2: Calibrate to Human Time</h4>
+          <p>
+            We discover that IRT-inferred latent difficulty closely tracks human completion time. For tasks with human annotations, we fit a log-linear mapping:
+          </p>
+          <p class="has-text-centered">
+            $$\log(h_k) = \text{slope} \times b_k + \text{intercept}$$
+          </p>
+          <p>
+            This anchors the latent scale to human-interpretable units, enabling prediction of human task completion time from model performance alone&mdash;without new human studies.
+          </p>
+
+          <h4 class="title is-5">Step 3: Forecast Capabilities</h4>
+          <p>
+            By tracking the best-performing model in each release window and mapping its ability to solvable task length via the calibration, we forecast how the frontier task-length horizon evolves over time.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ======== Calibration Result ======== -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-10">
+        <h2 class="title is-3">Calibration: Latent Difficulty &#x2194; Human Time</h2>
+        <figure class="image result-figure">
+          <img src="static/images/task_difficulty_vs_human_time_METR-only.png" alt="Calibration plot: task difficulty vs human time" loading="lazy">
+        </figure>
+        <p class="fig-caption">
+          <strong>Figure 1.</strong> Human completion time vs. latent task difficulty ($b$) estimated via 2PL IRT across METR task suites (SWAA, HCAST, RE-bench). The log-linear fit ($R^2 = 0.81$) shows that each unit increase in $b$ corresponds to ~2.26&times; longer human completion time. This calibration anchors the IRT latent difficulty scale to human-interpretable units.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ======== Task Time Estimation ======== -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-10">
+        <h2 class="title is-3">Estimating Human Task Completion Time</h2>
+        <div class="content has-text-justified">
+          <p>
+            We validate BRIDGE's time predictions on out-of-distribution benchmarks: SWE-bench Verified, Cybench, MLE-bench, and GDPval. BRIDGE consistently outperforms both success-rate heuristics and LLM-based estimation baselines.
+          </p>
+        </div>
+
+        <!-- SWE-bench -->
+        <h4 class="title is-5" style="margin-top: 2rem;">SWE-bench Verified</h4>
+        <figure class="image result-figure">
+          <img src="static/images/swebench_combined_time_estimation_boxplot_1x4.png" alt="SWE-bench time estimation results" loading="lazy">
+        </figure>
+        <p class="fig-caption">
+          <strong>Figure 2.</strong> Alignment between annotated human completion time buckets and estimated completion times on SWE-bench Verified. BRIDGE achieves substantially better alignment with the annotated time buckets than both heuristic and LLM-based baselines (Gemini 3 Pro, GPT-5.2).
+        </p>
+
+        <!-- Cybench -->
+        <h4 class="title is-5" style="margin-top: 2.5rem;">Cybench</h4>
+        <figure class="image result-figure">
+          <img src="static/images/cybench_combined_time_estimation_1x4.png" alt="Cybench time estimation results" loading="lazy">
+        </figure>
+        <p class="fig-caption">
+          <strong>Figure 3.</strong> Alignment between actual human first-solve time and estimated completion times on Cybench. BRIDGE aligns closely with actual human times, with 92.3% of tasks falling within a 0.5&times;&ndash;2&times; tolerance band. The logit baseline underestimates; LLM estimates consistently overestimate.
+        </p>
+
+        <!-- Task Length Distributions -->
+        <h4 class="title is-5" style="margin-top: 2.5rem;">Predicted Task Length Distributions</h4>
+        <div class="columns is-multiline" style="margin-top: 1rem;">
+          <div class="column is-one-third">
+            <figure class="image">
+              <img src="static/images/swebench_task_length_estimation.png" alt="SWE-bench task length distribution" loading="lazy">
+            </figure>
+            <p class="fig-caption-small">SWE-bench Verified</p>
+          </div>
+          <div class="column is-one-third">
+            <figure class="image">
+              <img src="static/images/mlebench_task_length_estimation.png" alt="MLE-bench task length distribution" loading="lazy">
+            </figure>
+            <p class="fig-caption-small">MLE-bench</p>
+          </div>
+          <div class="column is-one-third">
+            <figure class="image">
+              <img src="static/images/gdpval_task_length_estimation.png" alt="GDPval task length distribution" loading="lazy">
+            </figure>
+            <p class="fig-caption-small">GDPval</p>
+          </div>
+        </div>
+        <p class="fig-caption">
+          <strong>Figure 4.</strong> BRIDGE-estimated human task completion time distributions for benchmarks without exact time annotations. On MLE-bench, tasks yielding only valid submissions require substantially shorter completion times than achieving above-median performance or earning a medal.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ======== Capability Forecasting ======== -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-10">
+        <h2 class="title is-3">Forecasting Frontier Capabilities</h2>
+        <div class="content has-text-justified">
+          <p>
+            Using BRIDGE, we forecast the evolution of frontier model capabilities in human-interpretable units&mdash;using only model performance data, without human time annotations.
+          </p>
+        </div>
+
+        <!-- Success vs Task Length -->
+        <h4 class="title is-5" style="margin-top: 1.5rem;">Success Probability vs. Task Length</h4>
+        <figure class="image result-figure">
+          <img src="static/images/all_sources_grid_vs_task_length_threshold_0.50.png" alt="Success probability vs task length at 50% threshold" loading="lazy">
+        </figure>
+        <p class="fig-caption">
+          <strong>Figure 5.</strong> Success probability vs. estimated human task completion time for different models at the 50% threshold. SOTA models achieve 50% success on tasks estimated to require ~1.4&ndash;2.5 hours of human effort. Steeper curves reflect higher task discrimination parameters. Darker blue denotes more recent models.
+        </p>
+
+        <!-- Forecast Trends -->
+        <h4 class="title is-5" style="margin-top: 2.5rem;">Task-Length Horizon Over Time</h4>
+        <div class="columns is-centered" style="margin-top: 1rem;">
+          <div class="column is-6">
+            <figure class="image">
+              <img src="static/images/ability_forecast_log_scale_p50.png" alt="Forecast log scale p50" loading="lazy">
+            </figure>
+          </div>
+          <div class="column is-6">
+            <figure class="image">
+              <img src="static/images/ability_forecast_linear_scale_p50.png" alt="Forecast linear scale p50" loading="lazy">
+            </figure>
+          </div>
+        </div>
+        <p class="fig-caption">
+          <strong>Figure 6.</strong> Forecasting trends of task-length horizon over model release date without human task time annotations. The task length where a model can achieve 50% accuracy grows exponentially, with an estimated <strong>doubling time of approximately 6 months</strong>. Left: logarithmic scale. Right: linear scale. Shaded regions indicate 95% confidence intervals via bootstrap resampling.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ======== BibTeX ======== -->
+<section class="section" id="bibtex">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-10">
+        <h2 class="title is-3">BibTeX</h2>
+        <div class="bibtex-container">
+          <button class="button is-small is-light copy-btn" onclick="copyBibtex()">
+            <span class="icon is-small"><i class="fas fa-copy"></i></span>
+            <span>Copy</span>
+          </button>
+<pre id="bibtex-text">@article{liu2025bridge,
+  title={BRIDGE: Predicting Human Task Completion Time From Model Performance},
+  author={Liu, Fengyuan and Gala, Jay and Nilaksh and Bahdanau, Dzmitry and Reddy, Siva and Larochelle, Hugo},
+  year={2025}
+}</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ======== Acknowledgements ======== -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-10">
+        <h2 class="title is-4">Acknowledgements</h2>
+        <div class="content has-text-justified is-size-7 has-text-grey">
+          <p>
+            Siva Reddy and Dzmitry Bahdanau are supported by the Canada CIFAR AI Chairs program. We acknowledge the support of the IVADO R3AI Grant and a Gemini Academic Program Award. We thank the Mila IDT team and the Digital Research Alliance of Canada for computational resources, and members of McGill University and Mila for valuable feedback.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ======== Footer ======== -->
+<footer class="footer">
+  <div class="container">
+    <div class="content has-text-centered">
+      <p class="is-size-7 has-text-grey-light">
+        Template adapted from <a href="https://github.com/eliahuhorwitz/Academic-project-page-template" class="has-text-grey">Academic Project Page Template</a>.
+      </p>
+    </div>
+  </div>
+</footer>
+
+<script>
+function copyBibtex() {
+  const text = document.getElementById('bibtex-text').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.querySelector('.copy-btn span:last-child');
+    btn.textContent = 'Copied!';
+    setTimeout(() => { btn.textContent = 'Copy'; }, 2000);
+  });
+}
+</script>
+
+</body>
+</html>

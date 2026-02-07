@@ -1,0 +1,192 @@
+/* ===== Base ===== */
+body {
+  font-family: 'Noto Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: #363636;
+  background: #fff;
+}
+
+/* ===== Hero ===== */
+.hero {
+  padding-top: 3rem;
+  padding-bottom: 0;
+  background: #fff;
+}
+
+.publication-title {
+  font-size: 2.4rem !important;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 1.2rem;
+  color: #1a1a2e;
+}
+
+.publication-authors {
+  margin-bottom: 0.5rem;
+}
+
+.publication-authors .author-block {
+  margin-right: 0.15rem;
+}
+
+.publication-authors a {
+  color: #4a6fa5;
+  text-decoration: none;
+}
+
+.publication-authors a:hover {
+  text-decoration: underline;
+}
+
+.publication-affiliations {
+  margin-bottom: 0.3rem;
+  color: #6b7280;
+}
+
+.publication-affiliations .affil-block {
+  margin-right: 0.8rem;
+  white-space: nowrap;
+}
+
+/* ===== Link Buttons ===== */
+.publication-links {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 0.8rem;
+}
+
+.publication-links .button {
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.publication-links .button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+/* ===== Sections ===== */
+.section {
+  padding: 2rem 1.5rem;
+}
+
+.title.is-3 {
+  font-weight: 600;
+  color: #1a1a2e;
+  margin-bottom: 1.2rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 2px solid #eef1f5;
+}
+
+.title.is-5 {
+  color: #374151;
+  font-weight: 600;
+}
+
+/* ===== Figures ===== */
+.result-figure {
+  margin: 1.2rem auto;
+  max-width: 100%;
+}
+
+.result-figure img {
+  border-radius: 4px;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
+}
+
+.fig-caption {
+  font-size: 0.88rem;
+  color: #555;
+  line-height: 1.55;
+  margin-top: 0.8rem;
+  margin-bottom: 1rem;
+  text-align: justify;
+}
+
+.fig-caption strong {
+  color: #374151;
+}
+
+.fig-caption-small {
+  font-size: 0.82rem;
+  color: #6b7280;
+  text-align: center;
+  margin-top: 0.4rem;
+}
+
+/* ===== BibTeX ===== */
+.bibtex-container {
+  position: relative;
+  background: #f8f9fb;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 1rem 1.2rem;
+}
+
+.bibtex-container pre {
+  background: transparent;
+  padding: 0;
+  font-size: 0.82rem;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-all;
+  color: #374151;
+}
+
+.copy-btn {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  font-size: 0.75rem !important;
+}
+
+/* ===== Footer ===== */
+.footer {
+  padding: 1.5rem;
+  background: #fafafa;
+}
+
+/* ===== Math (KaTeX) ===== */
+.katex-display {
+  margin: 0.8rem 0;
+}
+
+/* ===== Responsive ===== */
+@media screen and (max-width: 768px) {
+  .publication-title {
+    font-size: 1.6rem !important;
+  }
+
+  .publication-affiliations .affil-block {
+    display: inline;
+    margin-right: 0.4rem;
+  }
+
+  .section {
+    padding: 1.5rem 1rem;
+  }
+}
+
+/* ===== Content Typography ===== */
+.content p {
+  font-size: 1rem;
+  line-height: 1.7;
+  margin-bottom: 0.9rem;
+}
+
+.content h4 {
+  margin-top: 1.5rem;
+}
+
+/* Subdued link style for body text */
+.content a {
+  color: #4a6fa5;
+}
+
+/* ===== Three-column figure grid ===== */
+.columns.is-multiline .column.is-one-third figure img {
+  border-radius: 4px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
