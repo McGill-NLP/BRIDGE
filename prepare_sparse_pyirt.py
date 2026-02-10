@@ -1,8 +1,3 @@
-#!/usr/bin/env python3
-"""Build a sparse py-IRT dataset from multiple run files."""
-
-from __future__ import annotations
-
 import argparse
 import json
 import random
@@ -12,6 +7,9 @@ from pathlib import Path
 from typing import Iterable
 
 from model_mapping import ModelMappingEntry, load_model_mapping
+
+SCRIPT_DIR = Path(__file__).parent.resolve()
+DATA_DIR = SCRIPT_DIR / "data"
 
 MLEBENCH_SCORE_TASKS = ("above_median", "any_medal", "valid_submission")
 
@@ -63,104 +61,6 @@ class ModelMapper:
             if record:
                 return record
         return None
-
-
-def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
-        description="Convert run logs into a sparse py-IRT JSONL file."
-    )
-    parser.add_argument(
-        "--model-mapping",
-        type=Path,
-        default=Path(__file__).with_name("data") / "model_run_mapping.csv",
-        help="JSON/CSV mapping describing which models and run_ids to include.",
-    )
-    parser.add_argument(
-        "--pyirt-input",
-        type=Path,
-        action="append",
-        default=[],
-        help="Existing py-IRT JSONL inputs to include (can be repeated).",
-    )
-    parser.add_argument(
-        "--runs-input",
-        type=Path,
-        action="append",
-        default=[],
-        help="Raw JSONL run files (per-task rows) to include (can be repeated).",
-    )
-    parser.add_argument(
-        "--score-column",
-        default="score_binarized",
-        help="Column to read from runs-input for binary correctness.",
-    )
-    parser.add_argument(
-        "--gdpval-input",
-        type=Path,
-        default=None,
-        help=(
-            "Normalized GDPVal JSONL file to include; defaults to data/"
-            "gdpval_normalized_results.jsonl."
-        ),
-    )
-    parser.add_argument(
-        "--mlebench-input",
-        type=Path,
-        default=None,
-        help=(
-            "Normalized MLEBench JSONL file to include; defaults to data/"
-            "mlebench_normalized_results.jsonl."
-        ),
-    )
-    parser.add_argument(
-        "--cybench-input",
-        type=Path,
-        default=None,
-        help=(
-            "Normalized Cybench JSONL file to include; defaults to data/"
-            "cybench_normalized_results.jsonl."
-        ),
-    )
-    parser.add_argument(
-        "--output",
-        type=Path,
-        required=True,
-        help="Where to write the combined py-IRT JSONL file.",
-    )
-    parser.add_argument(
-        "--target-sparsity",
-        type=float,
-        default=None,
-        help=(
-            "Desired sparsity percentage for the output (e.g., 80 or 0.8). "
-            "If provided and higher than the current sparsity, entries are "
-            "removed at random to reach the target."
-        ),
-    )
-    parser.add_argument(
-        "--print-subject-counts",
-        action="store_true",
-        help="Print how many responses each subject contributed.",
-    )
-    parser.add_argument(
-        "--keep-unmapped-pyirt-subjects",
-        action="store_true",
-        help=(
-            "When reading py-IRT inputs, retain rows even if the subject is missing "
-            "from the mapping by falling back to the recorded subject_id."
-        ),
-    )
-    parser.add_argument(
-        "--exclude-cybench-from-sparsity",
-        action="store_true",
-        help="When applying target sparsity, do not drop Cybench task responses.",
-    )
-    parser.add_argument(
-        "--verbose",
-        action="store_true",
-        help="Print progress and statistics.",
-    )
-    return parser.parse_args()
 
 
 def load_pyirt_file(
@@ -501,6 +401,104 @@ def apply_target_sparsity(
     return removed, new_stats
 
 
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Convert run logs into a sparse py-IRT JSONL file."
+    )
+    parser.add_argument(
+        "--model-mapping",
+        type=Path,
+        default=DATA_DIR / "model_run_mapping.csv",
+        help="JSON/CSV mapping describing which models and run_ids to include.",
+    )
+    parser.add_argument(
+        "--pyirt-input",
+        type=Path,
+        action="append",
+        default=[],
+        help="Existing py-IRT JSONL inputs to include (can be repeated).",
+    )
+    parser.add_argument(
+        "--runs-input",
+        type=Path,
+        action="append",
+        default=[],
+        help="Raw JSONL run files (per-task rows) to include (can be repeated).",
+    )
+    parser.add_argument(
+        "--score-column",
+        default="score_binarized",
+        help="Column to read from runs-input for binary correctness.",
+    )
+    parser.add_argument(
+        "--gdpval-input",
+        type=Path,
+        default=None,
+        help=(
+            "Normalized GDPVal JSONL file to include; defaults to data/"
+            "gdpval_normalized_results.jsonl."
+        ),
+    )
+    parser.add_argument(
+        "--mlebench-input",
+        type=Path,
+        default=None,
+        help=(
+            "Normalized MLEBench JSONL file to include; defaults to data/"
+            "mlebench_normalized_results.jsonl."
+        ),
+    )
+    parser.add_argument(
+        "--cybench-input",
+        type=Path,
+        default=None,
+        help=(
+            "Normalized Cybench JSONL file to include; defaults to data/"
+            "cybench_normalized_results.jsonl."
+        ),
+    )
+    parser.add_argument(
+        "--output",
+        type=Path,
+        required=True,
+        help="Where to write the combined py-IRT JSONL file.",
+    )
+    parser.add_argument(
+        "--target-sparsity",
+        type=float,
+        default=None,
+        help=(
+            "Desired sparsity percentage for the output (e.g., 80 or 0.8). "
+            "If provided and higher than the current sparsity, entries are "
+            "removed at random to reach the target."
+        ),
+    )
+    parser.add_argument(
+        "--print-subject-counts",
+        action="store_true",
+        help="Print how many responses each subject contributed.",
+    )
+    parser.add_argument(
+        "--keep-unmapped-pyirt-subjects",
+        action="store_true",
+        help=(
+            "When reading py-IRT inputs, retain rows even if the subject is missing "
+            "from the mapping by falling back to the recorded subject_id."
+        ),
+    )
+    parser.add_argument(
+        "--exclude-cybench-from-sparsity",
+        action="store_true",
+        help="When applying target sparsity, do not drop Cybench task responses.",
+    )
+    parser.add_argument(
+        "--verbose",
+        action="store_true",
+        help="Print detailed progress information.",
+    )
+    return parser.parse_args()
+
+
 def main() -> None:
     args = parse_args()
     if not args.pyirt_input and not args.runs_input:
@@ -540,9 +538,7 @@ def main() -> None:
                 f"(missing ids: {missing})"
             )
 
-    data_dir = Path(__file__).with_name("data")
-
-    gdpval_path = args.gdpval_input or data_dir / "gdpval_normalized_results.jsonl"
+    gdpval_path = args.gdpval_input or DATA_DIR / "gdpval_normalized_results.jsonl"
     if gdpval_path:
         gdp_rows, gdp_missing = add_gdpval_results(
             gdpval_path,
@@ -556,7 +552,7 @@ def main() -> None:
                 f"{gdp_rows} GDPVal rows (missing ids: {gdp_missing})"
             )
 
-    mlebench_path = args.mlebench_input or data_dir / "mlebench_normalized_results.jsonl"
+    mlebench_path = args.mlebench_input or DATA_DIR / "mlebench_normalized_results.jsonl"
     if mlebench_path:
         mle_rows, mle_missing, mle_metrics = add_mlebench_results(
             mlebench_path,
@@ -571,7 +567,7 @@ def main() -> None:
                 f"(missing ids: {mle_missing})"
             )
 
-    cybench_path = args.cybench_input or data_dir / "cybench_normalized_results.jsonl"
+    cybench_path = args.cybench_input or DATA_DIR / "cybench_normalized_results.jsonl"
     if cybench_path:
         cyber_rows, cyber_missing = add_cybench_results(
             cybench_path,

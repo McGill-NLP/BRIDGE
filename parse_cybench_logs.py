@@ -1,17 +1,12 @@
-#!/usr/bin/env python3
-"""
-Parse Cybench evaluation logs and generate cybench_normalized_results.jsonl with ONLY
-tasks that have actual evaluation data (40 tasks).
-
-This script does NOT use the 171-task FST template. It generates data directly from logs.
-"""
-
 import argparse
 import json
 import re
-from pathlib import Path
 from collections import defaultdict
+from pathlib import Path
 from typing import Dict, Tuple
+
+SCRIPT_DIR = Path(__file__).parent.resolve()
+DATA_DIR = SCRIPT_DIR / "data"
 
 
 def extract_task_id_from_path(challenge_path: str) -> str:
@@ -38,9 +33,7 @@ def extract_task_id_from_path(challenge_path: str) -> str:
 
 
 def normalize_model_name(model_name: str) -> str:
-    """
-    Normalize model name to standard format.
-    """
+    """Normalize model name to standard format."""
     if 'claude-3-5-sonnet' in model_name or 'claude-3.5-sonnet' in model_name:
         return 'claude-3.5-sonnet'
     elif 'claude-3-opus' in model_name:
@@ -215,22 +208,22 @@ def parse_all_logs(data_dir: Path, require_subtask_completion: bool, verbose: bo
     return results
 
 
-def main():
+def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description='Parse Cybench evaluation logs')
     parser.add_argument('--require-subtask-completion', action='store_true',
                         help='When set, a guided run marked success must have all subtasks correct to count as success')
     parser.add_argument('--verbose', action='store_true',
                         help='Print detailed progress information')
-    args = parser.parse_args()
+    return parser.parse_args()
 
-    # Get the directory where this script is located
-    script_dir = Path(__file__).parent.resolve()
 
-    data_dir = script_dir / 'data' / 'cybench_data_by_challenges'
-    # Read FST from master file (never overwritten)
-    fst_path = script_dir / 'data' / 'cybench_fst_master.jsonl'
-    output_path = script_dir / 'data' / 'cybench_normalized_results.jsonl'
-    human_minutes_output = script_dir / 'data' / 'cybench_human_minutes_by_task.jsonl'
+def main() -> None:
+    args = parse_args()
+
+    data_dir = DATA_DIR / 'cybench_data_by_challenges'
+    fst_path = DATA_DIR / 'cybench_fst_master.jsonl'
+    output_path = DATA_DIR / 'cybench_normalized_results.jsonl'
+    human_minutes_output = DATA_DIR / 'cybench_human_minutes_by_task.jsonl'
 
     if args.verbose:
         print("=" * 80)
@@ -262,7 +255,7 @@ def main():
     if args.verbose:
         all_tasks = set(tid for (tid, _) in parsed_results.keys())
         excluded_tasks = all_tasks - tasks_with_success
-        print(f"\n   Filtering tasks with no successes:")
+        print("\n   Filtering tasks with no successes:")
         print(f"   Tasks with at least one success: {len(tasks_with_success)}/{len(all_tasks)}")
         if excluded_tasks:
             print(f"   Excluded (0 successes): {len(excluded_tasks)}")
@@ -303,8 +296,8 @@ def main():
 
     # Generate normalized results - ONLY for tasks with actual evaluations
     if args.verbose:
-        print(f"\n3. Generating normalized results")
-        print(f"   Using unguided mode only")
+        print("\n3. Generating normalized results")
+        print("   Using unguided mode only")
 
     # Count unique tasks for weighting (all tasks with valid scores, before filtering)
     all_tasks_with_scores = set(
@@ -377,7 +370,7 @@ def main():
 
     # Print statistics
     if args.verbose:
-        print(f"\n" + "=" * 80)
+        print("\n" + "=" * 80)
         print("Statistics")
         print("=" * 80)
 
@@ -389,12 +382,12 @@ def main():
             # Stats for unguided mode
             success_count = sum(1 for r in records if r['score_binarized'] == 1)
             unique_tasks = len(set(r['task_id_base'] for r in records))
-            print(f"\nUNGUIDED mode:")
+            print("\nUNGUIDED mode:")
             print(f"  Records: {len(records)}, Unique tasks: {unique_tasks}")
             print(f"  Successes: {success_count}/{len(records)} ({100*success_count/len(records):.1f}%)")
 
             # Count by model
-            print(f"\nSuccess rate by model:")
+            print("\nSuccess rate by model:")
             model_stats = defaultdict(lambda: {'total': 0, 'success': 0})
             for record in records:
                 model = record['model']
@@ -407,8 +400,8 @@ def main():
                 rate = 100.0 * stats['success'] / stats['total'] if stats['total'] > 0 else 0
                 print(f"  {model}: {stats['success']}/{stats['total']} ({rate:.1f}%)")
 
-        print(f"\n✓ Results saved to {output_path}")
-        print(f"✓ Human minutes saved to {human_minutes_output}")
+        print(f"\nResults saved to {output_path}")
+        print(f"Human minutes saved to {human_minutes_output}")
 
 
 if __name__ == "__main__":

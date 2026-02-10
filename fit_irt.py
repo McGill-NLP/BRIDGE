@@ -12,32 +12,48 @@ from py_irt.training import IrtModelTrainer
 
 from two_param_logistic import TwoParamLogistic
 
+SCRIPT_DIR = Path(__file__).parent.resolve()
+PARAMS_DIR = SCRIPT_DIR / "params"
 
-def main():
 
-    # Read arguments
-    parser = argparse.ArgumentParser()
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Fit a 2PL IRT model and export parameters."
+    )
     parser.add_argument(
         "--input_path",
         type=str,
         required=True,
+        help="Path to input JSONL file (py-irt format)",
     )
     parser.add_argument(
         "--device",
         type=str,
         default="cpu",
+        help="Device to train on (default: cpu)",
     )
     parser.add_argument(
-        "--seed", 
-        type=int, 
+        "--seed",
+        type=int,
         default=0,
+        help="Random seed for reproducibility (default: 0)",
     )
     parser.add_argument(
-        "--epochs", 
-        type=int, 
+        "--epochs",
+        type=int,
         default=1000,
+        help="Number of training epochs (default: 1000)",
     )
-    args = parser.parse_args()
+    parser.add_argument(
+        "--verbose",
+        action="store_true",
+        help="Print detailed progress information",
+    )
+    return parser.parse_args()
+
+
+def main() -> None:
+    args = parse_args()
 
     # Make reproducible
     random.seed(args.seed)
@@ -50,11 +66,15 @@ def main():
 
     # Process input and output paths
     input_path = Path(args.input_path).expanduser()
-    print(input_path)
-    params_dir = Path(__file__).resolve().with_name("params")
-    params_dir.mkdir(parents=True, exist_ok=True)
-    out_csv = params_dir / f"{input_path.stem}.csv"
-    
+    PARAMS_DIR.mkdir(parents=True, exist_ok=True)
+    out_csv = PARAMS_DIR / f"{input_path.stem}.csv"
+    abilities_out_csv = PARAMS_DIR / f"{input_path.stem}_abilities.csv"
+
+    if args.verbose:
+        print(f"Input: {input_path}")
+        print(f"Output item params: {out_csv}")
+        print(f"Output abilities: {abilities_out_csv}")
+
     # Load input data
     data = Dataset.from_jsonlines(str(input_path))
     config = IrtConfig(
@@ -62,11 +82,14 @@ def main():
         priors="hierarchical",
     )
 
+    if args.verbose:
+        print(f"Training IRT model for {args.epochs} epochs on {args.device}...")
+
     # Fit IRT model
     trainer = IrtModelTrainer(
-        config=config, 
-        data_path=None, 
-        dataset=data
+        config=config,
+        data_path=None,
+        dataset=data,
     )
     trainer.train(epochs=args.epochs, device=args.device)
 
@@ -81,8 +104,11 @@ def main():
     subject_ids = list(trainer.best_params["subject_ids"].values())
     abilities = list(trainer.best_params["ability"])
     abilities_df = pd.DataFrame({"subject_id": subject_ids, "ability": abilities})
-    abilities_out_csv = params_dir / f"{input_path.stem}_abilities.csv"
     abilities_df.to_csv(abilities_out_csv, index=False)
+
+    if args.verbose:
+        print(f"Saved item parameters ({len(item_ids)} items) to {out_csv}")
+        print(f"Saved subject abilities ({len(subject_ids)} subjects) to {abilities_out_csv}")
 
 
 if __name__ == "__main__":

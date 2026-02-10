@@ -1,15 +1,11 @@
-from pathlib import Path
+import argparse
 import json
 import math
+from pathlib import Path
+import yaml
 
-try:
-    import yaml
-except ImportError:
-    yaml = None
-
-# Use relative paths based on script location
-BASE_DIR = Path(__file__).parent.resolve()
-DATA_DIR = BASE_DIR / "data"
+SCRIPT_DIR = Path(__file__).parent.resolve()
+DATA_DIR = SCRIPT_DIR / "data"
 VERIFIED_RESULTS_DIR = DATA_DIR / "experiments" / "evaluation" / "verified"
 BASH_ONLY_RESULTS_DIR = DATA_DIR / "experiments" / "evaluation" / "bash-only"
 MODEL_MAPPING_PATH = DATA_DIR / "model_run_mapping.json"
@@ -19,6 +15,35 @@ def read_jsonl(path: Path):
     """Load every JSON line into a list of dicts."""
     with path.open() as f:
         return [json.loads(line) for line in f]
+
+
+MODEL_NAME_MAP = {
+    "Qwen/Qwen2.5-Coder-32B-Instruct": "qwen2_5coder32b",
+    "openai/gpt-oss-20b": "gpt-oss-20b",
+    "openai/gpt-oss-120b": "gpt-oss-120b",
+    "MiniMaxAI/MiniMax-M2": "minimaxm2",
+    "Qwen/Qwen3-Coder-30B-A3B-Instruct": "qwen3-coder-30b",
+    "Qwen/Qwen3-Coder-480B-A35B-Instruct": "qwen3-coder-480b",
+}
+
+
+def normalize_swebench_records(records):
+    """Normalize swebench_normalized_results.jsonl records to the expected schema.
+
+    Maps 'task_id' -> 'id' and 'model' -> 'model_name' so that
+    build_score_matrix can consume them directly.  Also translates
+    fully-qualified model names to the short names used in
+    swebench_normalized_results.jsonl via MODEL_NAME_MAP.
+    """
+    normalized = []
+    for record in records:
+        model = record.get("model") or record.get("model_name")
+        normalized.append({
+            "id": record.get("task_id") or record.get("id"),
+            "model_name": MODEL_NAME_MAP.get(model, model),
+            "score": record["score"],
+        })
+    return normalized
 
 
 def select_score(value):
@@ -305,7 +330,8 @@ def build_unmapped_run_records(runs, base_ids, *, verbose=False):
 def prepare_swe_a_pyirt(verbose=False):
     """Build swe_a_pyirt.jsonl from swebench results and verified runs."""
     # Load swebench results
-    swe_results = read_jsonl(DATA_DIR / "swebench_results.jsonl")
+    swe_results = read_jsonl(DATA_DIR / "swebench_normalized_results.jsonl")
+    swe_results = normalize_swebench_records(swe_results)
     swe_scores = build_score_matrix(swe_results)
     if verbose:
         print(f"SWE-bench: {len(swe_scores['ids'])} ids x {len(swe_scores['models'])} models")
@@ -395,9 +421,16 @@ def prepare_swe_a_pyirt(verbose=False):
     return out_path
 
 
-if __name__ == "__main__":
-    import argparse
+def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Prepare swe_a_pyirt.jsonl for IRT analysis")
-    parser.add_argument("-v", "--verbose", action="store_true", help="Enable verbose output")
-    args = parser.parse_args()
+    parser.add_argument("--verbose", action="store_true", help="Print detailed progress information")
+    return parser.parse_args()
+
+
+def main() -> None:
+    args = parse_args()
     prepare_swe_a_pyirt(verbose=args.verbose)
+
+
+if __name__ == "__main__":
+    main()

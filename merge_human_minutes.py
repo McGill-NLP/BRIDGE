@@ -1,50 +1,12 @@
-#!/usr/bin/env python3
-"""
-Merge human-minute annotations from JSONL into the swebench CSV.
-
-Default inputs:
-  * CSV: IRT/params/swebench_selected_plus_all_runs_pyirt.csv
-  * JSONL: IRT/data/human_minutes_by_task.jsonl
-"""
-
-from __future__ import annotations
-
 import argparse
 import csv
 import json
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
-
-def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
-        description="Attach human_minutes values to the swebench CSV."
-    )
-    parser.add_argument(
-        "--csv",
-        type=Path,
-        default=Path("params/swebench_selected_plus_all_runs_pyirt.csv"),
-        help="Path to the CSV to augment (default: %(default)s)",
-    )
-    parser.add_argument(
-        "--jsonl",
-        type=Path,
-        default=Path("data/human_minutes_by_task.jsonl"),
-        help="Path to JSONL file containing {'task_id','human_minutes'} records "
-        "(default: %(default)s)",
-    )
-    parser.add_argument(
-        "--output",
-        type=Path,
-        default=None,
-        help="Where to write the merged CSV (default: overwrite --csv file in place).",
-    )
-    parser.add_argument(
-        "-v", "--verbose",
-        action="store_true",
-        help="Print progress and missing task IDs.",
-    )
-    return parser.parse_args()
+SCRIPT_DIR = Path(__file__).parent.resolve()
+DATA_DIR = SCRIPT_DIR / "data"
+PARAMS_DIR = SCRIPT_DIR / "params"
 
 
 def load_human_minutes(path: Path) -> Dict[str, Optional[float]]:
@@ -106,6 +68,37 @@ def write_rows(path: Path, header: List[str], rows: List[List[str]]) -> None:
         writer = csv.writer(handle)
         writer.writerow(header)
         writer.writerows(rows)
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Attach human_minutes values to the swebench CSV."
+    )
+    parser.add_argument(
+        "--csv",
+        type=Path,
+        default=PARAMS_DIR / "swebench_selected_plus_all_runs_pyirt.csv",
+        help="Path to the CSV to augment (default: %(default)s)",
+    )
+    parser.add_argument(
+        "--jsonl",
+        type=Path,
+        default=DATA_DIR / "human_minutes_by_task.jsonl",
+        help="Path to JSONL file containing {'task_id','human_minutes'} records "
+        "(default: %(default)s)",
+    )
+    parser.add_argument(
+        "--output",
+        type=Path,
+        default=None,
+        help="Where to write the merged CSV (default: overwrite --csv file in place).",
+    )
+    parser.add_argument(
+        "--verbose",
+        action="store_true",
+        help="Print detailed progress information.",
+    )
+    return parser.parse_args()
 
 
 def main() -> None:
