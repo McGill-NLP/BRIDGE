@@ -4,6 +4,15 @@
 
 [Fengyuan Liu*](https://fy-liu.github.io/), [Jay Gala*](https://jaygala24.github.io/), [Nilaksh](https://hskalin.github.io/), [Dzmitry Bahdanau](https://rizar.github.io/), [Siva Reddy](https://sivareddy.in/), [Hugo Larochelle](https://mila.quebec/en/directory/hugo-larochelle)
 
+<sub>
+*Equal Contribution
+</sub>
+
+<br>
+<br>
+
+[![Paper](https://img.shields.io/badge/paper-A42C25?style=for-the-badge&logo=arxiv&logoColor=white)](https://arxiv.org/abs/2602.07267) [![Website](https://img.shields.io/badge/Project%20Page-4285F4?style=for-the-badge&logo=googlechrome&logoColor=white)](https://mcgill-nlp.github.io/BRIDGE/)
+
 </div>
 
 ## Table of Contents
