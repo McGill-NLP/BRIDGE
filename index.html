@@ -78,7 +78,7 @@
           <div class="column has-text-centered">
             <div class="publication-links">
               <span class="link-block">
-                <a href="#" class="button is-dark is-rounded is-small">
+                <a href="https://arxiv.org/abs/2602.07267" class="button is-dark is-rounded is-small">
                   <span class="icon"><i class="fas fa-file-pdf"></i></span>
                   <span>Paper</span>
                 </a>
@@ -87,12 +87,6 @@
                 <a href="https://github.com/McGill-NLP/BRIDGE" class="button is-dark is-rounded is-small">
                   <span class="icon"><i class="fab fa-github"></i></span>
                   <span>Code</span>
-                </a>
-              </span>
-              <span class="link-block">
-                <a href="#" class="button is-dark is-rounded is-small">
-                  <span class="icon"><i class="ai ai-arxiv"></i></span>
-                  <span>arXiv</span>
                 </a>
               </span>
             </div>
@@ -132,7 +126,7 @@
             Evaluating the real-world capabilities of AI systems requires grounding benchmark performance in human-interpretable measures of task difficulty. Existing approaches that rely on direct human task completion time annotations are costly, noisy, and difficult to scale across benchmarks. In this work, we propose <strong>BRIDGE</strong> (<strong>B</strong>enchmark <strong>R</strong>esponse <strong>I</strong>nferred <strong>D</strong>ifficulty <strong>G</strong>rounded in <strong>E</strong>lapsed human time), a unified psychometric framework that learns the latent difficulty scale from model responses and anchors it to human task completion time.
           </p>
           <p>
-            Using a two-parameter logistic Item Response Theory model, we jointly estimate latent task difficulty and model capability from model performance data across multiple benchmarks. We demonstrate that latent task difficulty varies linearly with the logarithm of human completion time, allowing human task completion time to be inferred for new benchmarks from model performance alone. Leveraging this alignment, we forecast frontier model capabilities in terms of human task length and independently reproduce METR's exponential scaling results, with the <strong>50% solvable task horizon doubling approximately every 6 months</strong>.
+            Using a two-parameter logistic Item Response Theory model, we jointly estimate latent task difficulty and model capability from model performance data across multiple benchmarks. We demonstrate that latent task difficulty varies linearly with the logarithm of human completion time, allowing human task completion time to be inferred for new benchmarks from model performance alone. Leveraging this alignment, we forecast frontier model capabilities in terms of human task length and independently reproduce METR's exponential scaling results, with the 50% solvable task horizon doubling approximately every 6 months, <strong>without human completion time annotations</strong>.
           </p>
         </div>
       </div>
@@ -191,9 +185,11 @@
     <div class="columns is-centered">
       <div class="column is-10">
         <h2 class="title is-3">Calibration: Latent Difficulty &#x2194; Human Time</h2>
-        <figure class="image result-figure">
-          <img src="static/images/task_difficulty_vs_human_time_METR-only.png" alt="Calibration plot: task difficulty vs human time" loading="lazy">
-        </figure>
+        <div class="has-text-centered">
+          <figure class="image result-figure" style="max-width: 55%; display: inline-block;">
+            <img src="static/images/task_difficulty_vs_human_time_METR-only.png" alt="Calibration plot: task difficulty vs human time" loading="lazy">
+          </figure>
+        </div>
         <p class="fig-caption">
           <strong>Figure 1.</strong> Human completion time vs. latent task difficulty ($b$) estimated via 2PL IRT across METR task suites (SWAA, HCAST, RE-bench). The log-linear fit ($R^2 = 0.81$) shows that each unit increase in $b$ corresponds to ~2.26&times; longer human completion time. This calibration anchors the IRT latent difficulty scale to human-interpretable units.
         </p>
@@ -319,10 +315,14 @@
             <span class="icon is-small"><i class="fas fa-copy"></i></span>
             <span>Copy</span>
           </button>
-<pre id="bibtex-text">@article{liu2025bridge,
-  title={BRIDGE: Predicting Human Task Completion Time From Model Performance},
-  author={Liu, Fengyuan and Gala, Jay and Nilaksh and Bahdanau, Dzmitry and Reddy, Siva and Larochelle, Hugo},
-  year={2025}
+<pre id="bibtex-text">@misc{liu2026bridgepredictinghumantask,
+      title={BRIDGE: Predicting Human Task Completion Time From Model Performance}, 
+      author={Fengyuan Liu and Jay Gala and Nilaksh and Dzmitry Bahdanau and Siva Reddy and Hugo Larochelle},
+      year={2026},
+      eprint={2602.07267},
+      archivePrefix={arXiv},
+      primaryClass={cs.AI},
+      url={https://arxiv.org/abs/2602.07267}, 
 }</pre>
         </div>
       </div>
